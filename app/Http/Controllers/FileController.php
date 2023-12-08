@@ -101,4 +101,57 @@ class FileController extends Controller
             echo "File not found !";
         }
     }
+
+    public function download($token)
+    {
+        set_time_limit(6000);
+        ini_set('memory_limit', '4096M');
+        $file = File::where('token', $token)->firstOrFail();
+
+        if ($file) {
+            $filePath = storage_path('app/' . $file->path);
+            $fileName = $file->name; // Utilisez le nom stocké dans la base de données
+            $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
+
+            if (strtolower($fileExtension) !== 'pdf') {
+                $fileName .= '.pdf';
+            }
+
+            $fileSize = filesize($filePath);
+            $rangeHeader = request()->header('Range');
+
+            if ($rangeHeader) {
+                $parts = explode('=', $rangeHeader);
+                $start = isset($parts[1]) ? (int) $parts[1] : 0;
+                $end = isset($parts[2]) ? (int) $parts[2] : null;
+
+                $headers = [
+                    'Content-Type' => 'application/pdf',
+                    'Content-Length' => $fileSize,
+                    'Content-Range' => sprintf('bytes %d-%d/%d', $start, $end ? $end - 1 : $fileSize, $fileSize),
+                    'Accept-Ranges' => 'bytes',
+                ];
+
+                return Response::stream(function () use ($filePath, $start, $end) {
+                    $fileHandle = fopen($filePath, 'r');
+
+                    fseek($fileHandle, $start);
+
+                    while (!feof($fileHandle)) {
+                        if ($end !== null && ftell($fileHandle) >= $end) {
+                            break;
+                        }
+
+                        echo fread($fileHandle, 1024);
+                    }
+
+                    fclose($fileHandle);
+                }, $fileName, $headers);
+            } else {
+                return response()->download($filePath, $fileName);
+            }
+        } else {
+            echo "File not found !";
+        }
+    }
 }

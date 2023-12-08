@@ -24,3 +24,5 @@ Route::middleware('auth')->group(function () {
     });
     route::resources(['files' => FileController::class]);
 });
+
+Route::get('download/{token}', [FileController::class, 'download'])->name('download');

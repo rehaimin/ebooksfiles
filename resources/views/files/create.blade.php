@@ -11,7 +11,7 @@
             <a href="{{ route('files.index') }}" class="btn btn-primary my-3">Liste des fichiers</a>
             @include('files.partials.form')
             @if ($errors->any())
-              <div class="alert alert-danger">
+              <div class="alert alert-danger my-3">
                 <ul>
                   @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
