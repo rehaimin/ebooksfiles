@@ -9,10 +9,12 @@ use Illuminate\Support\Facades\Storage;
 
 class FileController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $files = File::all()->sortDesc(); // Récupérer tous les fichiers téléversés depuis la base de données
-        return view('files.index', ['files' => $files]); // Passer les fichiers à la vue index
+        $searchTerm = $request->search;
+        $files = File::where('name', 'LIKE', '%' . $searchTerm . '%')->orderBy('created_at', 'desc')
+            ->paginate(10); // Récupérer tous les fichiers téléversés depuis la base de données
+        return view('files.index', compact('files')); // Passer les fichiers à la vue index
     }
 
     public function create()
@@ -83,7 +85,20 @@ class FileController extends Controller
     public function update($token)
     {
     }
-    public function delete($token)
+    public function destroy($token)
     {
+        $file = File::where('token', $token)->firstOrFail();
+
+        if ($file) {
+
+            $file->delete();
+            Storage::delete($file->path);
+
+            //return response()->json(['success' => 'File deleted successfully'], 200);
+            return redirect()->route('files.index');
+        } else {
+            //return response()->json(['error' => 'File not found or unauthorized access'], 404);
+            echo "File not found !";
+        }
     }
 }

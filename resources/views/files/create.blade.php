@@ -8,7 +8,7 @@
           <div class="card-header">Ajouter un fichier</div>
 
           <div class="card-body">
-            <a href="{{ route('index') }}" class="btn btn-primary my-3">Liste des fichiers</a>
+            <a href="{{ route('files.index') }}" class="btn btn-primary my-3">Liste des fichiers</a>
             @include('files.partials.form')
             @if ($errors->any())
               <div class="alert alert-danger">

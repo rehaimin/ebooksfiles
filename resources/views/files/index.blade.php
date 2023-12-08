@@ -8,7 +8,25 @@
           <div class="card-header">Liste des fichiers</div>
 
           <div class="card-body">
-            <a href="{{ route('files.create') }}" class="btn btn-primary my-3">Ajouter un Fichier</a>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <a href="{{ route('files.create') }}" class="btn btn-primary my-3">Ajouter un Fichier</a>
+              <form method="GET" action="{{ route('files.index') }}" accept-charset="UTF-8"
+                class="form-inline my-2 my-lg-0 float-right" role="search">
+                @csrf
+                <div class="input-group">
+                  <input type="search" class="form-control" name="search" placeholder="Recherche..."
+                    value="{{ request('search') }}">
+                  <button class="btn btn-secondary" type="submit">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                      class="bi bi-search" viewBox="0 0 16 16">
+                      <path
+                        d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                    </svg>
+                  </button>
+                </div>
+              </form>
+            </div>
+            {{ $files->links() }}
             <table class="table-responsive table table-striped table-light">
               <thead>
                 <tr>
@@ -39,22 +57,25 @@
                     <td style="width: 15%; text-align:center;">{{ date('d/m/Y H:i:s', strtotime($file->created_at)) }}
                     </td>
                     <td style="width: 15%; text-align:center;">
-                      {{-- <a href="{{ route('delete', $file->token) }}"> --}}
-                      <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512" style="width: 32px">
-                        <path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320"
-                          fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                          stroke-width="32" />
-                        <path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32"
-                          d="M80 112h352" />
-                        <path
-                          d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224"
-                          fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                          stroke-width="32" />
-                      </svg>
-                      </a>
-                      &nbsp;
+                      <button type="button" class="btn" data-bs-toggle="modal"
+                        data-bs-target="#modal{{ $file->id }}" style="border:none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"
+                          style="width: 32px;color:red;">
+                          <path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320"
+                            fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="32" />
+                          <path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32"
+                            d="M80 112h352" />
+                          <path
+                            d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224"
+                            fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="32" />
+                        </svg>
+                      </button>
+
                       <a href="{{ route('files.edit', $file->token) }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512" style="width: 32px">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"
+                          style="width: 32px;color:green">
                           <path d="M384 224v184a40 40 0 01-40 40H104a40 40 0 01-40-40V168a40 40 0 0140-40h167.48"
                             fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                             stroke-width="32" />
@@ -63,10 +84,35 @@
                         </svg>
                       </a>
                     </td>
+                    <!-- Modal -->
+                    <div class="modal fade" id="modal{{ $file->id }}" tabindex="-1"
+                      aria-labelledby="modalLabel{{ $file->id }}" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="modalLabel{{ $file->id }}">Confirmer la suppression
+                            </h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            Etes vous sû de vouloir supprimer : <span style="font-weight: 700">{{ $file->name }}</span>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Annuler</button>
+                            <form action="{{ route('files.destroy', $file->token) }}" method="POST">
+                              @csrf
+                              @method('DELETE')
+                              <button type="submit" class="btn btn-danger">Supprimer</button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </tr>
                 @endforeach
               </tbody>
             </table>
+            {{ $files->links() }}
           </div>
         </div>
       </div>
