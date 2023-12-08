@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\File;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Http\Client\Response;
+use Sopamo\LaravelFilepond\Filepond;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File as FileSystem;
 
 class FileController extends Controller
 {
@@ -26,7 +29,7 @@ class FileController extends Controller
     {
         // Validate the request data.
         $this->validate($request, [
-            'file' => 'required_without:url|file|mimes:pdf',
+            'file' => 'required_without:url',
             'url' => 'required_without:file|nullable|url',
             'name' => 'nullable|string',
         ]);
@@ -34,13 +37,27 @@ class FileController extends Controller
         set_time_limit(6000);
         ini_set('memory_limit', '4096M');
 
-        if ($request->has('file')) {
-            $file = $request->file('file');
-            $name = $request->input('name') ?? $file->getClientOriginalName();
-            $randomFileName = Str::random(40) . '.pdf';
-            $path = $file->storeAs('files', $randomFileName); // Store the file
-            $size = $file->getSize();
-        } elseif ($request->has('url')) {
+        if ($request->file) {
+            $filepond = app(Filepond::class);
+            $path = $filepond->getPathFromServerId($request->file);
+            $originalName = Str::afterLast($path, '/');
+            $fullpath = storage_path('app/') . $path;
+            $size = Storage::size($path);
+            $finalLocation = storage_path('app/files/' . Str::random(40) . '.pdf');
+            FileSystem::move($fullpath, $finalLocation);
+            $directoryPath = dirname($fullpath);
+            FileSystem::deleteDirectory($directoryPath);
+            $name = $request->input('name') ?? $originalName;
+
+            $fileModel = new File();
+            $fileModel->name = $name;
+            $fileModel->path = str_replace($finalLocation, 'app/', '');
+            $fileModel->token = Str::random(60); // Generate a random token
+            $fileModel->size = number_format(round($size / 1024 / 1024, 2), 2, ',', '.');
+            $fileModel->save();
+            return redirect()->route('files.index');
+        }
+        if ($request->has('url')) {
             $context = stream_context_create(['http' => ['header' => 'User-Agent: PHP']]);
 
             $file = file_get_contents($request->url, false, $context);
@@ -50,25 +67,20 @@ class FileController extends Controller
 
             file_put_contents(storage_path('app/' . $path), $file);
             $size = Storage::size($path);
-        }
-
-        if ($file) {
-            // Create a new file model.
             $fileModel = new File();
             $fileModel->name = $name;
             $fileModel->path = $path;
             $fileModel->token = Str::random(60); // Generate a random token
             $fileModel->size = number_format(round($size / 1024 / 1024, 2), 2, ',', '.');
             $fileModel->save();
-
-            unset($file);
-
-            // return $fileModel;
+            if (isset($file)) {
+                unset($file);
+            }
             return redirect()->route('files.index');
-        } else {
-            echo 'Aucun fichier n\'a été soumis.';
-            die();
         }
+
+        echo 'Aucun fichier n\'a été soumis.';
+        die();
     }
 
 

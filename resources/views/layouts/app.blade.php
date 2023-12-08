@@ -14,8 +14,11 @@
   <link rel="dns-prefetch" href="//fonts.bunny.net">
   <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
+  <!-- Filepond stylesheet -->
+  {{-- <link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet"> --}}
+
   <!-- Scripts -->
-  @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+  @vite(['resources/sass/app.scss', 'resources/css/app.css', 'resources/js/app.js'])
   </body>
 </head>
 
