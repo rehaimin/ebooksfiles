@@ -43,7 +43,9 @@ class FileController extends Controller
             $originalName = Str::afterLast($path, '/');
             $fullpath = storage_path('app/') . $path;
             $size = Storage::size($path);
-            $finalLocation = storage_path('app/files/' . Str::random(40) . '.pdf');
+            $randomFileName = Str::random(40) . '.pdf';
+            $finalLocation = storage_path('app/files/' . $randomFileName);
+            $fileModelPath = str_replace($finalLocation, 'app/', '');
             FileSystem::move($fullpath, $finalLocation);
             $directoryPath = dirname($fullpath);
             FileSystem::deleteDirectory($directoryPath);
@@ -51,7 +53,7 @@ class FileController extends Controller
 
             $fileModel = new File();
             $fileModel->name = $name;
-            $fileModel->path = str_replace($finalLocation, 'app/', '');
+            $fileModel->path = 'files/' . $randomFileName;
             $fileModel->token = Str::random(60); // Generate a random token
             $fileModel->size = number_format(round($size / 1024 / 1024, 2), 2, ',', '.');
             $fileModel->save();
