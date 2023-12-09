@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\UploadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,3 +27,6 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('download/{token}', [FileController::class, 'download'])->name('download');
+
+Route::get('upload', [UploadController::class, 'index'])->name('upload.index');
+Route::post('upload', [UploadController::class, 'store'])->name('upload.store');
