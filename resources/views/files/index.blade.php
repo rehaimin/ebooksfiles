@@ -57,6 +57,7 @@
                     <td style="width: 15%; text-align:center;">{{ date('d/m/Y H:i:s', strtotime($file->created_at)) }}
                     </td>
                     <td style="width: 15%; text-align:center;">
+                      {{-- Delete File --}}
                       <button type="button" class="btn" data-bs-toggle="modal"
                         data-bs-target="#modal{{ $file->id }}" style="border:none;">
                         <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"
@@ -72,7 +73,7 @@
                             stroke-width="32" />
                         </svg>
                       </button>
-
+                      {{-- Edit File --}}
                       <a href="{{ route('files.edit', $file->token) }}">
                         <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"
                           style="width: 32px;color:green">

@@ -27,7 +27,6 @@ class FileController extends Controller
 
     public function store(Request $request)
     {
-        // Validate the request data.
         $this->validate($request, [
             'file' => 'required_without:url',
             'url' => 'required_without:file|nullable|url',
@@ -96,9 +95,70 @@ class FileController extends Controller
             die();
         }
     }
-    public function update($token)
+    public function update(Request $request, $token)
     {
+        $this->validate($request, [
+            'file' => 'nullable',
+            'url' => 'nullable|url',
+            'name' => 'nullable|string',
+        ]);
+
+        set_time_limit(6000);
+        ini_set('memory_limit', '4096M');
+
+        if ($request->file && Str::length($request->file) == 256) {
+            $filepond = app(Filepond::class);
+            $path = $filepond->getPathFromServerId($request->file);
+            $originalName = Str::afterLast($path, '/');
+            $fullpath = storage_path('app/') . $path;
+            $size = Storage::size($path);
+            $randomFileName = Str::random(40) . '.pdf';
+            $finalLocation = storage_path('app/files/' . $randomFileName);
+            $fileModelPath = str_replace($finalLocation, 'app/', '');
+            FileSystem::move($fullpath, $finalLocation);
+            $directoryPath = dirname($fullpath);
+            FileSystem::deleteDirectory($directoryPath);
+            $name = $request->input('name') ?? $originalName;
+
+            $fileModel = File::where('token', $token)->firstOrFail();
+            $fileModel->name = $name;
+            $fileModel->path = 'files/' . $randomFileName;
+            $fileModel->size = number_format(round($size / 1024 / 1024, 2), 2, ',', '.');
+            $fileModel->save();
+            return redirect()->route('files.index');
+        }
+        if ($request->has('url') && $request->url != '') {
+            $context = stream_context_create(['http' => ['header' => 'User-Agent: PHP']]);
+
+            $file = file_get_contents($request->url, false, $context);
+            $randomFileName = Str::random(40) . '.pdf';
+            $name = $request->input('name') ?? basename(urldecode($request->url));
+            $path = 'files/' . $randomFileName;
+
+            file_put_contents(storage_path('app/' . $path), $file);
+            $size = Storage::size($path);
+            $fileModel = File::where('token', $token)->firstOrFail();
+            $fileModel->name = $name;
+            $fileModel->path = $path;
+            $fileModel->size = number_format(round($size / 1024 / 1024, 2), 2, ',', '.');
+            $fileModel->save();
+            if (isset($file)) {
+                unset($file);
+            }
+            return redirect()->route('files.index');
+        }
+
+        if ($request->name) {
+            $fileModel = File::where('token', $token)->firstOrFail();
+            $fileModel->name = $request->name;
+            $fileModel->save();
+            return redirect()->route('files.index');
+        }
+
+        echo 'Aucun fichier n\'a été soumis.';
+        die();
     }
+
     public function destroy($token)
     {
         $file = File::where('token', $token)->firstOrFail();

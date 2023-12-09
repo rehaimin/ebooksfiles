@@ -1,6 +1,9 @@
 <form action="{{ isset($file) ? route('files.update', $file->token) : route('files.store') }}" method="post"
   enctype="multipart/form-data">
   @csrf
+  @if (isset($file))
+    @method('PATCH')
+  @endif
   <div class="mb-3 row">
     <label for="name" class="col-sm-2 col-form-label">Nom</label>
     <div class="col-sm-10">
