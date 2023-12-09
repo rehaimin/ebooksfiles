@@ -114,7 +114,6 @@ class FileController extends Controller
             $size = Storage::size($path);
             $randomFileName = Str::random(40) . '.pdf';
             $finalLocation = storage_path('app/files/' . $randomFileName);
-            $fileModelPath = str_replace($finalLocation, 'app/', '');
             FileSystem::move($fullpath, $finalLocation);
             $directoryPath = dirname($fullpath);
             FileSystem::deleteDirectory($directoryPath);
