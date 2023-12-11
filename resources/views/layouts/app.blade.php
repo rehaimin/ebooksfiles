@@ -15,10 +15,13 @@
   <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
   <!-- Filepond stylesheet -->
+  <link href="{{ asset('build/assets/app-213f20bf.css') }}" rel="stylesheet">
   {{-- <link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet"> --}}
 
   <!-- Scripts -->
-  @vite(['resources/sass/app.scss', 'resources/css/app.css', 'resources/js/app.js'])
+  {{-- @vite(['resources/sass/app.scss', 'resources/css/app.css', 'resources/js/app.js']) --}}
+
+  <script src="{{ asset('build/assets/app-4de94adc.js') }}" defer></script>
 
   </body>
 </head>

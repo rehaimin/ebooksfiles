@@ -14,6 +14,7 @@
         "vite": "^4.0.0"
     },
     "dependencies": {
-        "filepond": "^4.30.4"
+        "filepond": "^4.30.4",
+        "vite-plugin-copy": "^0.1.6"
     }
 }
