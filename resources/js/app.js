@@ -5,6 +5,7 @@ import * as FilePond from "filepond";
 const pond = FilePond.create({
     multiple: true,
     name: "filepond",
+    chunkUploads: true,
 });
 
 // Add it to the DOM

@@ -11,7 +11,10 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "pion/laravel-chunk-upload": "^1.5",
-        "sopamo/laravel-filepond": "^1.2"
+        "sopamo/laravel-filepond": "^1.2",
+        "symfony/css-selector": "^6.4",
+        "symfony/dom-crawler": "^6.4",
+        "symfony/http-client": "^6.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\AmazonCrawlerController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UploadController;
 
 /*
@@ -24,6 +26,8 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('files.index');
     });
     route::resources(['files' => FileController::class]);
+    route::get('amazon-product', [AmazonCrawlerController::class, 'scrapeAmazonProduct'])->name('amazon-product');
+    route::get('new-product', [ProductController::class, 'create'])->name('new-prouct');
 });
 
 Route::get('download/{token}', [FileController::class, 'download'])->name('download');
