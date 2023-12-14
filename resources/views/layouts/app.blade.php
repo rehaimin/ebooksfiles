@@ -23,7 +23,6 @@
 
   {{-- <script src="{{ asset('build/assets/app-897bcfee.js') }}" defer></script> --}}
 
-  </body>
 </head>
 
 <body>

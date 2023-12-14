@@ -2,7 +2,7 @@
 
 @section('content')
   <script src="{{ asset('tinymce/js/tinymce/tinymce.min.js') }}"></script>
-  <div class="container">
+  <div class="container-fluid">
     <div class="row">
       <div class="col-md-8">
         <div class="row justify-content-center">
@@ -49,11 +49,40 @@
                           step="0.01">
                       </div>
                     </div>
-                    <div class="mb-2 row">
-                      <label for="product_sale_price" class="col-form-label">Prix Promo</label>
-                      <div class="col-sm-12">
-                        <input type="number" class="form-control" id="product_sale_price" name="product_sale_price"
-                          step="0.01">
+                    <div class="row">
+                      <div class="col-md-9">
+                        <div class="mb-2 row">
+                          <label for="product_sale_price" class="col-form-label">Prix Promo</label>
+                          <div class="col-sm-12">
+                            <input type="number" class="form-control" id="product_sale_price" name="product_sale_price"
+                              step="0.01">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <label for="discount" class="col-form-label">Réduction</label>
+                        <div class="col-sm-12">
+                          <select name="discount" class="form-select" id="discount" onchange="calculateSalePrice()">
+                            <option value="0.9">90%</option>
+                            <option value="0.85">85%</option>
+                            <option value="0.8">80%</option>
+                            <option value="0.75">75%</option>
+                            <option value="0.7" selected>70%</option>
+                            <option value="0.65">65%</option>
+                            <option value="0.6">60%</option>
+                            <option value="0.55">55%</option>
+                            <option value="0.5">50%</option>
+                            <option value="0.45">45%</option>
+                            <option value="0.4">40%</option>
+                            <option value="0.35">35%</option>
+                            <option value="0.3">30%</option>
+                            <option value="0.25">25%</option>
+                            <option value="0.2">20%</option>
+                            <option value="0.15">15%</option>
+                            <option value="0.1">10%</option>
+                          </select>
+                        </div>
+
                       </div>
                     </div>
                   </div>
@@ -74,11 +103,28 @@
   <script>
     let regularPriceInput = document.getElementById("product_regular_price");
 
+    function showLoader() {
+      let loaderWrapper = document.createElement('div');
+      loaderWrapper.classList = "loader-wrapper"
+      let loader = document.createElement('div');
+      loader.classList = "loader";
+      document.body.appendChild(loaderWrapper);
+      loaderWrapper.appendChild(loader);
+      document.body.classList.add('overflow-hidden')
+    }
+
+    function hideLoader() {
+      let loaderWrapper = document.querySelector('.loader-wrapper');
+      document.body.removeChild(loaderWrapper);
+      document.body.classList.remove('overflow-hidden')
+    }
+
     function scrapData() {
       let amazonCover = document.getElementById("amazonCover");
       // let imgDownload = document.getElementById("imgDownload");
       let titleInput = document.getElementById("product_title");
       let urlInput = document.getElementById("url");
+      showLoader();
       fetch("/amazon-product/?url=" + urlInput.value, {
           method: "GET",
           headers: {
@@ -88,7 +134,11 @@
         .then((response) => response.json())
         .then((data) => {
           // 			console.log(data);
-          amazonCover.src = data.data.image;
+          if (data.data.largeimage) {
+            amazonCover.src = data.data.largeimage;
+          } else {
+            amazonCover.src = data.data.image;
+          }
           // imgDownload.href = data.data.image;
           // imgDownload.download = "test.jpg";
           titleInput.value = data.data.title;
@@ -96,15 +146,17 @@
           tinymce.activeEditor.setContent(data.data.description);
           calculateSalePrice();
           // copyDownloadNameFromTitle()
+          hideLoader()
         })
         .catch((error) => {
           console.error("Error:", error);
+          hideLoader()
         });
     }
 
     function calculateSalePrice() {
       let salePriceInput = document.querySelector("input[name='product_sale_price']");
-      let discountRate = 0.80;
+      let discountRate = document.getElementById('discount').value;
       let calculatedSalePrice;
       calculatedSalePrice = parseInt(regularPriceInput.value * (1 - discountRate)) - 0.01;
       if (calculatedSalePrice < 19.99) {

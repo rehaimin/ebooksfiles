@@ -50,6 +50,7 @@ class AmazonCrawlerController extends Controller
 
             // Extract the image of the product
             $coverImage = $crawler->filter(self::SELECTOR_IMAGE)->attr('src');
+            $coverLargeImage = $crawler->filter(self::SELECTOR_IMAGE)->attr('data-old-hires');
             $arrImage = explode(".", $coverImage);
             $image = $arrImage[0] . "." . $arrImage[1] . "." . $arrImage[2] . "." . $arrImage[4];
 
@@ -61,6 +62,7 @@ class AmazonCrawlerController extends Controller
                 'title' => $title,
                 'price' => $price,
                 'image' => $image,
+                'largeimage' => $coverLargeImage,
                 'description' => $description,
             ];
 
