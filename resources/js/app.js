@@ -6,6 +6,8 @@ const pond = FilePond.create({
     multiple: true,
     name: "filepond",
     chunkUploads: true,
+    chunkSize: 1048576,
+    chunkForce: true,
 });
 
 // Add it to the DOM
