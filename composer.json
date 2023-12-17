@@ -2,7 +2,10 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.1",
@@ -12,7 +15,6 @@
         "laravel/tinker": "^2.8",
         "pion/laravel-chunk-upload": "^1.5",
         "sopamo/laravel-filepond": "^1.2",
-        "spatie/browsershot": "^3.60",
         "symfony/css-selector": "^6.4",
         "symfony/dom-crawler": "^6.4",
         "symfony/http-client": "^6.4"

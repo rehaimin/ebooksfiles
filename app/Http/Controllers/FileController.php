@@ -35,7 +35,7 @@ class FileController extends Controller
 
         set_time_limit(6000);
         ini_set('memory_limit', '4096M');
-
+        $fileToken = Str::random(60);
         if ($request->file) {
             $filepond = app(Filepond::class);
             $path = $filepond->getPathFromServerId($request->file);
@@ -53,9 +53,15 @@ class FileController extends Controller
             $fileModel = new File();
             $fileModel->name = $name;
             $fileModel->path = 'files/' . $randomFileName;
-            $fileModel->token = Str::random(60); // Generate a random token
+            $fileModel->token = $fileToken; // Generate a random token
             $fileModel->size = number_format(round($size / 1024 / 1024, 2), 2, ',', '.');
             $fileModel->save();
+            if ($request->api) {
+                return response()->json([
+                    'message' => 'success',
+                    'link' => route('download', $fileToken)
+                ]);
+            }
             return redirect()->route('files.index');
         }
         if ($request->has('url')) {
@@ -71,11 +77,17 @@ class FileController extends Controller
             $fileModel = new File();
             $fileModel->name = $name;
             $fileModel->path = $path;
-            $fileModel->token = Str::random(60); // Generate a random token
+            $fileModel->token = $fileToken; // Generate a random token
             $fileModel->size = number_format(round($size / 1024 / 1024, 2), 2, ',', '.');
             $fileModel->save();
             if (isset($file)) {
                 unset($file);
+            }
+            if ($request->api) {
+                return response()->json([
+                    'message' => 'success',
+                    'link' => route('download', $fileToken)
+                ]);
             }
             return redirect()->route('files.index');
         }

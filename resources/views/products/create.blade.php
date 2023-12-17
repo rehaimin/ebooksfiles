@@ -8,13 +8,12 @@
         <div class="row justify-content-center">
           <div class="col-md-12">
             <div class="card">
-              <div class="card-header">Produit Amazon</div>
-
+              <div class="card-header">Article</div>
               <div class="card-body">
                 <div class="mb-2 row align-items-center ">
                   <label for="url" class="col-form-label">Url</label>
                   <div class="col-sm-11">
-                    <input type="url" class="form-control" id="url" name="url"
+                    <input type="url" class="form-control" id="amzon_url" name="url"
                       placeholder="https://www.amazon.com/...">
                   </div>
                   <div class="col-sm-1">
@@ -39,18 +38,19 @@
                     <div class="mb-2 row">
                       <label for="product_title" class="col-form-label">Nom</label>
                       <div class="col-sm-12">
-                        <input type="text" class="form-control" id="product_title" name="product_title">
-                      </div>
-                    </div>
-                    <div class="mb-2 row">
-                      <label for="product_regular_price" class="col-form-label">Prix</label>
-                      <div class="col-sm-12">
-                        <input type="number" class="form-control" id="product_regular_price" name="product_regular_price"
-                          step="0.01">
+                        <input type="text" class="form-control" id="product_title" name="product_title"
+                          onchange="copyDownloadNameFromTitle()">
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-md-9">
+                      <div class="col-md-5">
+                        <label for="product_regular_price" class="col-form-label">Prix</label>
+                        <div class="col-sm-12">
+                          <input type="number" class="form-control" id="product_regular_price"
+                            name="product_regular_price" step="0.01" onchange="calculateSalePrice()">
+                        </div>
+                      </div>
+                      <div class="col-md-5">
                         <div class="mb-2 row">
                           <label for="product_sale_price" class="col-form-label">Prix Promo</label>
                           <div class="col-sm-12">
@@ -59,7 +59,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col-md-3">
+                      <div class="col-md-2">
                         <label for="discount" class="col-form-label">Réduction</label>
                         <div class="col-sm-12">
                           <select name="discount" class="form-select" id="discount" onchange="calculateSalePrice()">
@@ -82,7 +82,19 @@
                             <option value="0.1">10%</option>
                           </select>
                         </div>
-
+                      </div>
+                    </div>
+                    <div class="mb-2 row">
+                      <label for="virtual_file_name" class="col-form-label">Nom du fichier</label>
+                      <div class="col-sm-12">
+                        <input type="text" class="form-control" id="virtual_file_name" name="virtual_file_name">
+                      </div>
+                    </div>
+                    <div class="mb-2 row">
+                      <label for="virtual_file_url" class="col-form-label">Lien du fichier</label>
+                      <div class="col-sm-12">
+                        <input type="url" class="form-control" id="virtual_file_url" name="virtual_file_url"
+                          placeholder="http://...">
                       </div>
                     </div>
                   </div>
@@ -98,103 +110,25 @@
           </div>
         </div>
       </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">Ajouter un fichier</div>
+
+          <div class="card-body">
+            @include('files.partials.form')
+            @if ($errors->any())
+              <div class="alert alert-danger my-3">
+                <ul>
+                  @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                  @endforeach
+                </ul>
+              </div>
+            @endif
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <script>
-    let regularPriceInput = document.getElementById("product_regular_price");
-
-    function showLoader() {
-      let loaderWrapper = document.createElement('div');
-      loaderWrapper.classList = "loader-wrapper"
-      let loader = document.createElement('div');
-      loader.classList = "loader";
-      document.body.appendChild(loaderWrapper);
-      loaderWrapper.appendChild(loader);
-      document.body.classList.add('overflow-hidden')
-    }
-
-    function hideLoader() {
-      let loaderWrapper = document.querySelector('.loader-wrapper');
-      document.body.removeChild(loaderWrapper);
-      document.body.classList.remove('overflow-hidden')
-    }
-
-    function scrapData() {
-      let amazonCover = document.getElementById("amazonCover");
-      // let imgDownload = document.getElementById("imgDownload");
-      let titleInput = document.getElementById("product_title");
-      let urlInput = document.getElementById("url");
-      showLoader();
-      fetch("/amazon-product/?url=" + urlInput.value, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-        .then((response) => response.json())
-        .then((data) => {
-          // 			console.log(data);
-          if (data.data.largeimage) {
-            amazonCover.src = data.data.largeimage;
-          } else {
-            amazonCover.src = data.data.image;
-          }
-          // imgDownload.href = data.data.image;
-          // imgDownload.download = "test.jpg";
-          titleInput.value = data.data.title;
-          regularPriceInput.value = data.data.price;
-          tinymce.activeEditor.setContent(data.data.description);
-          calculateSalePrice();
-          // copyDownloadNameFromTitle()
-          hideLoader()
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          hideLoader()
-        });
-    }
-
-    function calculateSalePrice() {
-      let salePriceInput = document.querySelector("input[name='product_sale_price']");
-      let discountRate = document.getElementById('discount').value;
-      let calculatedSalePrice;
-      calculatedSalePrice = parseInt(regularPriceInput.value * (1 - discountRate)) - 0.01;
-      if (calculatedSalePrice < 19.99) {
-        salePriceInput.value = 19.99
-        return;
-      }
-      let numberWithoutDecimales = calculatedSalePrice.toString().split(".")[0];
-      let lastNumber = parseInt(numberWithoutDecimales.substr(-1))
-      // return;
-      switch (true) {
-        case (lastNumber === 0):
-          salePriceInput.value = (parseInt(numberWithoutDecimales) * 100 - 1) / 100;
-          break;
-        case (lastNumber > 0 && lastNumber < 5):
-          salePriceInput.value = ((parseInt(numberWithoutDecimales) - lastNumber) * 100 + 599) / 100;
-          break;
-        case (lastNumber > 5 && lastNumber < 7):
-          salePriceInput.value = ((parseInt(numberWithoutDecimales) - lastNumber) * 100 + 799) / 100;
-          break;
-        case (lastNumber === 5):
-        case (lastNumber === 7):
-          salePriceInput.value = (parseInt(numberWithoutDecimales) * 100 + 99) / 100;
-          break;
-        default:
-          salePriceInput.value = ((parseInt(numberWithoutDecimales) - lastNumber) * 100 + 999) / 100;
-      }
-    }
-
-
-    // import tinymce from 'tinymce';
-
-    document.addEventListener('DOMContentLoaded', function() {
-      tinymce.init({
-        selector: 'textarea', // cible tous les textareas
-        plugins: 'autolink link image lists',
-        toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image',
-        menubar: false
-      });
-    });
-  </script>
+  @include('products.script')
 @endsection

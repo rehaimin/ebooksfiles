@@ -4,6 +4,7 @@ use App\Http\Controllers\AmazonCrawlerController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MockupController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UploadController;
@@ -29,13 +30,9 @@ Route::middleware('auth')->group(function () {
     route::resources(['files' => FileController::class]);
     route::get('amazon-product', [AmazonCrawlerController::class, 'scrapeAmazonProduct'])->name('amazon-product');
     route::get('new-product', [ProductController::class, 'create'])->name('new-prouct');
+    route::get('cover', [ImageController::class, 'transformImage'])->name('cover');
 });
 
 Route::get('download/{token}', [FileController::class, 'download'])->name('download');
-Route::get('image', [MockupController::class, 'viewToImage'])->name('image');
-Route::get('mockup', function () {
-    return view('mockup.index');
-})->name('mockup');
-
 // Route::get('upload', [UploadController::class, 'index'])->name('upload.index');
 // Route::post('upload', [UploadController::class, 'store'])->name('upload.store');

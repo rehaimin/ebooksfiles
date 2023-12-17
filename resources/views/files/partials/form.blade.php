@@ -1,5 +1,5 @@
 <form action="{{ isset($file) ? route('files.update', $file->token) : route('files.store') }}" method="post"
-  enctype="multipart/form-data">
+  enctype="multipart/form-data" id="fileForm">
   @csrf
   @if (isset($file))
     @method('PATCH')
@@ -18,7 +18,7 @@
     </div>
   </div>
   <div class="mb-3 row">
-    <label for="url" class="col-sm-2 col-form-label">Ou une url</label>
+    <label for="url" class="col-sm-2 col-form-label">Ou url</label>
     <div class="col-sm-10">
       <input type="url" class="form-control" id="url" name="url">
     </div>
