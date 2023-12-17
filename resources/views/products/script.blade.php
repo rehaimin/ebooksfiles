@@ -1,29 +1,33 @@
 <script>
+  let titleInput = document.getElementById("product_title");
   let regularPriceInput = document.getElementById("product_regular_price");
+  let salePriceInput = document.querySelector("input[name='product_sale_price']");
+  let amazonCover = document.getElementById("amazonCover");
 
-  function showLoader() {
+  function showLoader(loaderParentSelector) {
+    let loaderParent = document.querySelector(loaderParentSelector);
     let loaderWrapper = document.createElement('div');
     loaderWrapper.classList = "loader-wrapper"
     let loader = document.createElement('div');
     loader.classList = "loader";
-    document.body.appendChild(loaderWrapper);
+    loaderParent.appendChild(loaderWrapper);
     loaderWrapper.appendChild(loader);
-    document.body.classList.add('overflow-hidden')
+    // document.body.classList.add('overflow-hidden')
   }
 
-  function hideLoader() {
+  function hideLoader(loaderParentSelector) {
+    let loaderParent = document.querySelector(loaderParentSelector);
     let loaderWrapper = document.querySelector('.loader-wrapper');
-    document.body.removeChild(loaderWrapper);
-    document.body.classList.remove('overflow-hidden')
+    loaderParent.removeChild(loaderWrapper);
+    // document.body.classList.remove('overflow-hidden')
   }
 
-  let titleInput = document.getElementById("product_title");
+
 
   function scrapData() {
-    let amazonCover = document.getElementById("amazonCover");
     // let imgDownload = document.getElementById("imgDownload");
     let urlInput = document.getElementById("amzon_url");
-    showLoader();
+    showLoader('#product_card');
     fetch("/amazon-product/?url=" + urlInput.value, {
         method: "GET",
         headers: {
@@ -48,11 +52,11 @@
         tinymce.activeEditor.setContent(data.data.description);
         calculateSalePrice();
         copyDownloadNameFromTitle()
-        hideLoader()
+        hideLoader('#product_card')
       })
       .catch((error) => {
         console.error("Error:", error);
-        hideLoader()
+        hideLoader('#product_card')
       });
   }
 
@@ -75,7 +79,7 @@
   }
 
   function calculateSalePrice() {
-    let salePriceInput = document.querySelector("input[name='product_sale_price']");
+
     let discountRate = document.getElementById('discount').value;
     let calculatedSalePrice;
     let minmumPrice = 25.99;
@@ -106,8 +110,10 @@
     }
   }
 
+  let downloadNameInput = document.querySelector("input[name='virtual_file_name']");
+  let downloadUrlInput = document.querySelector("input[name='virtual_file_url']");
+
   function copyDownloadNameFromTitle() {
-    let downloadNameInput = document.querySelector("input[name='virtual_file_name']");
     let uplaodFileName = document.getElementById('name');
     downloadNameInput.value = titleInput.value;
     uplaodFileName.value = titleInput.value;
@@ -116,7 +122,7 @@
   let fileForm = document.getElementById('fileForm');
   fileForm.addEventListener('submit', function(e) {
     e.preventDefault();
-    showLoader();
+    showLoader('#file_card');
     fetch("{{ route('files.store') }}", {
         method: "POST",
         headers: {
@@ -132,15 +138,44 @@
       }).then((response) => (response.json()))
       .then((data) => {
         if (data.message = 'success') {
-          document.getElementById('virtual_file_url').value = data.link;
+          downloadUrlInput.value = data.link;
+          fileForm.reset();
         };
-        hideLoader()
+        hideLoader('#file_card')
       }).catch(error => {
         // Gérer l'erreur
         console.error('Erreur fetch :', error);
-        hideLoader()
+        hideLoader('#file_card')
       });
-  })
+  });
+
+  function createWooProduct() {
+    let checkedCategory = document.querySelector("input[type='checkbox']:checked").value;
+    fetch(
+        "{{ route('add-product') }}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          },
+          body: JSON.stringify({
+            title: titleInput.value,
+            regular_price: regularPriceInput.value,
+            sale_price: salePriceInput.value,
+            description: tinymce.activeEditor.getContent(),
+            image: amazonCover.src,
+            donwload_name: downloadNameInput.value,
+            donwload_link: downloadUrlInput.value,
+            category_id: checkedCategory,
+          })
+        }).then((response) => (response.json()))
+      .then((data) => {
+        console.log(data);
+      }).catch(error => {
+        console.error('Erreur fetch :', error);
+      });
+  }
+
   // import tinymce from 'tinymce';
 
   document.addEventListener('DOMContentLoaded', function() {

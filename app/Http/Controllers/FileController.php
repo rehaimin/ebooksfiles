@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\File;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Spatie\PdfParser\PdfParser;
 use Illuminate\Http\Client\Response;
 use Sopamo\LaravelFilepond\Filepond;
 use Illuminate\Support\Facades\Storage;

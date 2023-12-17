@@ -27,12 +27,14 @@ Route::middleware('auth')->group(function () {
     route::get('/', function () {
         return redirect()->route('files.index');
     });
-    route::resources(['files' => FileController::class]);
-    route::get('amazon-product', [AmazonCrawlerController::class, 'scrapeAmazonProduct'])->name('amazon-product');
-    route::get('new-product', [ProductController::class, 'create'])->name('new-prouct');
-    route::get('cover', [ImageController::class, 'transformImage'])->name('cover');
+    Route::resources(['files' => FileController::class]);
+    Route::get('amazon-product', [AmazonCrawlerController::class, 'scrapeAmazonProduct'])->name('amazon-product');
+    Route::get('new-product', [ProductController::class, 'create'])->name('new-prouct');
+    Route::get('cover', [ImageController::class, 'transformImage'])->name('cover');
 });
+Route::get('add-product', [ProductController::class, 'addProduct'])->name('add-product');
 
 Route::get('download/{token}', [FileController::class, 'download'])->name('download');
+
 // Route::get('upload', [UploadController::class, 'index'])->name('upload.index');
 // Route::post('upload', [UploadController::class, 'store'])->name('upload.store');
