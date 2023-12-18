@@ -28,6 +28,12 @@ class FileController extends Controller
 
     public function store(Request $request)
     {
+
+        $fileStorageDirectory = storage_path('app/files/');
+        if (!file_exists($fileStorageDirectory)) {
+            mkdir($fileStorageDirectory, 0777, true);
+        }
+
         $this->validate($request, [
             'file' => 'required_without:url',
             'url' => 'required_without:file|nullable|url',
