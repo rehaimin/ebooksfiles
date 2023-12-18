@@ -65,9 +65,7 @@ class ProductController extends Controller
                     'file' => $request->virtual_file_url,
                 ],
             ],
-            'categories' => [
-                $categories_ids,
-            ],
+            'categories' => $categories_ids,
         ];
 
         // Créer le produit
@@ -75,10 +73,10 @@ class ProductController extends Controller
 
         if ($createdProduct) {
             // Le produit a été créé avec succès
-            return response()->json(['message' => 'success']);
+            return redirect()->back()->with('message', 'Aricle ajouté avec succès!');
         } else {
             // Une erreur s'est produite lors de la création du produit
-            return response()->json(['error' => 'Unknown error']);
+            return redirect()->back()->with('error', 'L\'jout a echoué!');
         }
     }
 }
