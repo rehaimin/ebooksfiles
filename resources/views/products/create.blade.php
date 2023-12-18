@@ -4,12 +4,13 @@
   <script src="{{ asset('tinymce/js/tinymce/tinymce.min.js') }}"></script>
   <div class="container-fluid">
     <div class="row">
-      <form action="{{ route('add-product') }}" method="get">
-        <div class="col-xl-8">
+      <div class="col-lg-8 mb-3">
+        <form action="{{ route('add-product') }}" method="get">
           <div class="row justify-content-center">
             <div class="col-md-12">
               <div class="card" id="product_card">
-                <div class="card-header">Article <button type="submit">Ajouter</button></div>
+                <div class="card-header d-flex justify-content-between align-items-center"><span>Article</span> <button
+                    type="submit" class="btn btn-primary">Ajouter</button></div>
                 <div class="card-body">
                   <div class="mb-2 row align-items-center ">
                     <label for="url" class="col-form-label">Url</label>
@@ -133,10 +134,10 @@
               </div>
             </div>
           </div>
-        </div>
-      </form>
-      <div class="col-xl-4">
-        <div class="card" id="file_card">
+        </form>
+      </div>
+      <div class="col-lg-4">
+        <div class="card mb-3" id="file_card">
           <div class="card-header">Ajouter un fichier</div>
 
           <div class="card-body">
@@ -152,6 +153,14 @@
             @endif
           </div>
         </div>
+        <style>
+          #addFile,
+          .actionButtons,
+          .actionHeader {
+            display: none;
+          }
+        </style>
+        @include('files.partials.files-list')
       </div>
     </div>
   </div>

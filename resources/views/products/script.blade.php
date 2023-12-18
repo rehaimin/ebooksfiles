@@ -141,6 +141,7 @@
       .then((data) => {
         if (data.message = 'success') {
           downloadUrlInput.value = data.link;
+          updateFilesList();
           fileForm.reset();
         };
         hideLoader('#file_card')
@@ -176,6 +177,60 @@
       }).catch(error => {
         console.error('Erreur fetch :', error);
       });
+  }
+
+
+
+  let searchForm = document.querySelector('#searchForm');
+  searchForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    showLoader('#filesListCard');
+    updateFilesList();
+    hideLoader('#filesListCard');
+  })
+
+  function listenToFilesCardEvents() {
+    let pageLinks = [];
+    pageLinks = document.querySelectorAll("a.page-link");
+
+    pageLinks.forEach(pageLink => {
+      if (!pageLink.dataset.event) {
+        pageLink.addEventListener('click', function(e) {
+          e.preventDefault();
+          showLoader('#filesListCard');
+          let url = new URL(e.target.href);
+          pageNumber = url.searchParams.get('page');
+          updateFilesList(`page=${pageNumber}`);
+          hideLoader('#filesListCard');
+          pageLink.dataset.event = true;
+        })
+      }
+    })
+  }
+
+  listenToFilesCardEvents();
+
+  function updateFilesList(paramsText = '') {
+    let parser = new DOMParser();
+    let searchTerm = document.querySelector('#searchTerm').value
+    fetch("/files?search=" + searchTerm + '&' + paramsText, {
+        method: "GET",
+      })
+      .then((response) => response.text())
+      .then((html) => {
+        let doc = parser.parseFromString(html, "text/html");
+        document.querySelector(".table-wrapper").innerHTML =
+          doc.querySelector(".table-wrapper").innerHTML;
+        listenToFilesCardEvents();
+      })
+      .catch(error => {
+        console.error('Erreur liste de fichiers :', error);
+      });
+  }
+
+  function getUrlParam(param) {
+    let url = new URL(window.location.href);
+    return url.searchParams.get(param);
   }
 
   // import tinymce from 'tinymce';

@@ -1065,7 +1065,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(140, 140, 140, 0.3);
+    background-color: rgba(140, 140, 140, 0.25);
     z-index: 9999;
 }
 

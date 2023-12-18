@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\File;
 use Illuminate\Http\Request;
 use Automattic\WooCommerce\Client;
 
 
 class ProductController extends Controller
 {
-    public function create()
+    public function create(Request $request)
     {
+        $searchTerm = $request->search;
+        $files = File::where('name', 'LIKE', '%' . $searchTerm . '%')->orderBy('created_at', 'desc')
+            ->paginate(10);
+
         $woocommerce = new Client(
             env('WC_STORE_URL'),
             env('WC_CUSTOMER_KEY'),
@@ -21,9 +26,7 @@ class ProductController extends Controller
             ]
         );
         $categories = $woocommerce->get('products/categories');
-        if ($categories) {
-            return view('products.create', compact('categories'));
-        }
+        return view('products.create', compact('categories', 'files'));
     }
     public function addProduct(Request $request)
     {
