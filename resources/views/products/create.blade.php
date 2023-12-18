@@ -34,8 +34,7 @@
                     <div class="col-md-3">
                       <img src="{{ asset('images/No-Image-Placeholder.jpg') }}" alt="" class="w-100 rounded"
                         id="amazonCover">
-                      <input type='hidden' name='image'
-                        value="https://m.media-amazon.com/images/I/91fgaabp5hL._SY466_.jpg">
+                      <input type='hidden' name='image' value="">
                     </div>
                     <div class="col-md-9">
                       <div class="mb-2 row">

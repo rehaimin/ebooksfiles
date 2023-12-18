@@ -2,6 +2,7 @@
   let titleInput = document.getElementById("product_title");
   let regularPriceInput = document.getElementById("product_regular_price");
   let salePriceInput = document.querySelector("input[name='product_sale_price']");
+  let imageInput = document.querySelector("input[name='image']");
   let amazonCover = document.getElementById("amazonCover");
 
   function showLoader(loaderParentSelector) {
@@ -71,6 +72,7 @@
       .then((data) => {
         if (data.message = 'success') {
           amazonCover.src = data.image_path;
+          imageInput.value = data.image_path;
         };
       }).catch(error => {
         // Gérer l'erreur
