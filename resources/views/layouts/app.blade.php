@@ -14,14 +14,13 @@
   <link rel="dns-prefetch" href="//fonts.bunny.net">
   <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
-  <!-- Filepond stylesheet -->
-  {{-- <link href="{{ asset('build/assets/app-213f20bf.css') }}" rel="stylesheet"> --}}
-  {{-- <link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet"> --}}
+  <!-- Stylesheet -->
+  <link href="{{ asset('build/assets/app-fa06f4fe.css') }}" rel="stylesheet">
 
   <!-- Scripts -->
-  @vite(['resources/sass/app.scss', 'resources/css/app.css', 'resources/js/app.js'])
+  {{-- @vite(['resources/sass/app.scss', 'resources/css/app.css', 'resources/js/app.js']) --}}
 
-  {{-- <script src="{{ asset('build/assets/app-897bcfee.js') }}" defer></script> --}}
+  <script src="{{ asset('build/assets/app-760cb181.js') }}" defer></script>
 
 </head>
 
