@@ -52,8 +52,8 @@
         regularPriceInput.value = data.data.price;
         tinymce.activeEditor.setContent(data.data.description);
         calculateSalePrice();
-        copyDownloadNameFromTitle()
-        hideLoader('#product_card')
+        // copyDownloadNameFromTitle();
+        hideLoader('#product_card');
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -114,7 +114,8 @@
 
   let downloadNameInput = document.querySelector("input[name='virtual_file_name']");
   let downloadUrlInput = document.querySelector("input[name='virtual_file_url']");
-
+  downloadNameInput.value = "DOWNLOAD";
+  
   function copyDownloadNameFromTitle() {
     let uplaodFileName = document.getElementById('name');
     downloadNameInput.value = titleInput.value;

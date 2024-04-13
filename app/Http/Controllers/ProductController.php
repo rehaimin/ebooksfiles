@@ -50,7 +50,6 @@ class ProductController extends Controller
 
         $newProduct = [
             'name' => $request->product_title,
-            'status' => 'draft',
             'type' => 'simple',
             'virtual' => true,
             'downloadable' => true,

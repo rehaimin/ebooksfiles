@@ -22,17 +22,17 @@ class ImageController extends Controller
 
         // Charger et redimensionner l'image de couverture
         $coverImage = imagecreatefromjpeg($coverImagePath);
-        $coverImage = imagescale($coverImage, 715.5, 990);
+        $coverImage = imagescale($coverImage, 660, 990);
 
         // Insérer l'image de couverture dans l'image d'arrière-plan
-        imagecopy($backgroundImage, $coverImage, 165, 45, 0, 0, imagesx($coverImage), imagesy($coverImage));
+        imagecopy($backgroundImage, $coverImage, 193, 45, 0, 0, imagesx($coverImage), imagesy($coverImage));
 
         // Charger et redimensionner l'autre image à ajouter
         $sideImage = imagecreatefromjpeg($sideImagePath);
         $sideImage = imagescale($sideImage, 35.2, 990);
 
         // Insérer l'autre image à la partie droite de l'image principale
-        imagecopy($backgroundImage, $sideImage, 165 + 715.5, 45, 0, 0, imagesx($sideImage), imagesy($sideImage));
+        imagecopy($backgroundImage, $sideImage, 193 + 660, 45, 0, 0, imagesx($sideImage), imagesy($sideImage));
 
         //Vider le répertoire output 
         File::cleanDirectory(public_path('/images/output'));
